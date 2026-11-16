@@ -1,5 +1,4 @@
-from src.models import Apartment, Bill, Parameters, Tenant, Transfer
-
+from src.models import Apartment, ApartmentSettlement, Bill, Parameters, Tenant, Transfer
 
 class Manager:
     def __init__(self, parameters: Parameters):
@@ -40,3 +39,20 @@ class Manager:
                 continue
             total += bill.amount_pln
         return total
+
+    def create_apartment_settlement(self, apartment_key: str, year: int,
+                                    month: int) -> ApartmentSettlement | None:
+        total_bills = self.get_apartment_costs(apartment_key, year, month)
+        if total_bills is None:
+            return None
+
+        total_rent = 0.0  # transfers will be included in a later step
+
+        return ApartmentSettlement(
+            apartment=apartment_key,
+            year=year,
+            month=month,
+            total_rent_pln=total_rent,
+            total_bills_pln=total_bills,
+            total_due_pln=total_rent - total_bills,
+        )
